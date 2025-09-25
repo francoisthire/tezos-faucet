@@ -231,7 +231,12 @@ export default function FaucetRequestButton({
         // Let the progress bar briefly show 100% before it goes away
         await new Promise((res) => setTimeout(res, 800))
 
-        const viewerUrl = `${network.viewer}/${data.txHash}`
+        const viewer = network.viewer
+        // If the viewer contains the special substring "<hash>",
+        // put the hash there instead of at the end
+        const substituted = viewer.replace("<hash>", data.txHash)
+        const viewerUrl =
+              viewer == substituted ? `${network.viewer}/${data.txHash}` : substituted
 
         stopLoadingSuccess(
           `Your ꜩ is on the way! <a target="_blank" href="${viewerUrl}" class="alert-link">Check it.</a>`
