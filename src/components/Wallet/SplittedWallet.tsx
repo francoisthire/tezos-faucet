@@ -1,8 +1,9 @@
 import { BeaconWallet } from "@taquito/beacon-wallet"
 import { TezosToolkit } from "@taquito/taquito"
+import { validateKeyHash } from "@taquito/utils"
 import Config from "../../Config"
-import { useEffect } from "react"
-import { Button, Card, Row, Col } from "react-bootstrap"
+import { useEffect, useState, ChangeEvent } from "react"
+import { Button, Card, Row, Col, Form } from "react-bootstrap"
 import UserInfo from "../Faucet/UserInfo"
 import { Network, TestnetContext, UserContext } from "../../lib/Types"
 
@@ -15,6 +16,9 @@ function SplittedWallet({
   testnetContext: TestnetContext
   network: Network
 }) {
+  const [inputClass, setInputClass] = useState<string>("")
+  const [inputValue, setInputValue] = useState<string>("")
+
   /**
    * Set user address and balances on wallet connection
    */
@@ -25,7 +29,8 @@ function SplittedWallet({
     user.setUserBalance(balance.toNumber())
   }
 
-  const connectWallet = async (): Promise<void> => {
+  // Beacon wallet connection - hidden for now to avoid compatibility issues
+  const _connectWallet = async (): Promise<void> => {
     if (!network.networkType) {
       console.error("No network defined.")
       return
@@ -66,12 +71,31 @@ function SplittedWallet({
   const disconnectWallet = async (): Promise<void> => {
     user.setUserAddress("")
     user.setUserBalance(0)
+    setInputValue("")
+    setInputClass("")
     const tezosTK = new TezosToolkit(network.rpcUrl)
     testnetContext.setTezos(tezosTK)
     if (testnetContext.wallet) {
       await testnetContext.wallet.clearActiveAccount()
     }
-    window.location.reload()
+  }
+
+  const handleInput = async (event: ChangeEvent<HTMLInputElement>) => {
+    const value: string = event.target.value
+    setInputValue(value)
+
+    if (value.length === 0) {
+      setInputClass("")
+      user.setUserAddress("")
+      user.setUserBalance(0)
+    } else if (validateKeyHash(value) === 3) {
+      setInputClass("is-valid")
+      await setup(value)
+    } else {
+      setInputClass("is-invalid")
+      user.setUserAddress("")
+      user.setUserBalance(0)
+    }
   }
 
   return (
@@ -86,14 +110,23 @@ function SplittedWallet({
 
             <Col>
               <Button variant="outline-danger" onClick={disconnectWallet}>
-                Disconnect
+                Clear
               </Button>
             </Col>
           </Row>
         ) : (
-          <Button variant="outline-primary" onClick={connectWallet}>
-            Connect wallet
-          </Button>
+          <Form.Group>
+            <Form.Control
+              type="text"
+              placeholder="Paste your address (tz1...)"
+              className={inputClass}
+              value={inputValue}
+              onChange={handleInput}
+            />
+            <Form.Control.Feedback type="invalid" className="position-absolute">
+              Invalid address
+            </Form.Control.Feedback>
+          </Form.Group>
         )}
       </Card.Body>
     </Card>
