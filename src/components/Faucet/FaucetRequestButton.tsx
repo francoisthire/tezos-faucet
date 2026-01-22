@@ -1,5 +1,5 @@
 import axios from "axios"
-import { RefObject, useEffect, useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Button, Spinner, Form, Row, Col } from "react-bootstrap"
 import { DropletFill } from "react-bootstrap-icons"
 import ReCAPTCHA from "react-google-recaptcha"
@@ -59,7 +59,7 @@ export default function FaucetRequestButton({
   const formattedAmount = formatAmount(amount)
 
   const [isLocalLoading, setLocalLoading] = useState<boolean>(false)
-  const recaptchaRef: RefObject<ReCAPTCHA> = useRef(null)
+  const recaptchaRef = useRef<ReCAPTCHA | null>(null)
 
   // Ensure that `isLocalLoading` is false if user canceled pow worker.
   // `status.isLoading` will be false.
