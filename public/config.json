@@ -1,17 +1,17 @@
 {
-    "application": {
-      "name": "Tezos Ghostnet Faucet",
-      "googleCaptchaSiteKey": "6LefC8QmAAAAAIXuoOhyI-FtALkYXZm4JK0GBYfb",
-      "backendUrl": "http://localhost:3000",
-      "githubRepo": "https://github.com/tacoinfra/tezos-faucet",
-      "disableChallenges": false,
-      "minTez": 1,
-      "maxTez": 6000
-    },
-    "network": {
-      "name": "Ghostnet",
-      "rpcUrl": "http://localhost:8732",
-      "faucetAddress": "tz1PWgj8DP6dKCm6shSfhY3FnXP5kr3Y9CiD",
-      "viewer": "https://ghost.tzstats.com"
-    }
+  "application": {
+    "name": "Tezlink Test Faucet",
+    "googleCaptchaSiteKey": "6LefC8QmAAAAAIXuoOhyI-FtALkYXZm4JK0GBYfb",
+    "backendUrl": "https://faucet.api.shadownet.tezlink.nomadic-labs.com",
+    "githubRepo": "https://github.com/tacoinfra/tezos-faucet",
+    "disableChallenges": true,
+    "minTez": 1,
+    "maxTez": 6000
+  },
+  "network": {
+    "name": "tezlink_shadownet",
+    "rpcUrl": "https://rpc.shadownet.tezlink.nomadic-labs.com",
+    "faucetAddress": "tz1KqTpEZ7Yob7QbPE4Hy4Wo8fHG8LhKxZSx",
+    "viewer": "https://shadownet.tezlink.tzkt.io/<hash>"
+  }
 }
