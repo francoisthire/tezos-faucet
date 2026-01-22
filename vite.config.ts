@@ -1,10 +1,10 @@
-import react from "@vitejs/plugin-react"
-import { defineConfig } from "vite"
-import pkgJson from "./package.json"
+import react from "@vitejs/plugin-react";
+import { defineConfig } from "vite";
+import pkgJson from "./package.json";
+import { nodePolyfills } from "vite-plugin-node-polyfills";
 
-const isDevelopment = (mode) => mode === "development"
+const isDevelopment = (mode: string) => mode === "development";
 
-// https://vitejs.dev/config/
 export default defineConfig(async ({ mode }) => ({
   build: {
     outDir: "build",
@@ -19,37 +19,37 @@ export default defineConfig(async ({ mode }) => ({
       external: ["virtual:terminal"],
     },
   },
+
   esbuild: {
     supported: {
       "top-level-await": true,
     },
   },
+
   plugins: [
+    // Polyfill Node core modules for browser builds (fixes url/http/crypto/etc.)
+    nodePolyfills({
+      protocolImports: true, // handles node:crypto / node:url, etc.
+      globals: {
+        Buffer: true,
+        global: true,
+        process: true,
+      },
+    }),
+
     react(),
-    // In dev, let console.log go to terminal and console output. `console` arg
-    // for vite-plugin-terminal doesn't work . See this issue.
-    // https://github.com/patak-dev/vite-plugin-terminal/issues/23
+
     ...[
       isDevelopment(mode) &&
-        (await import("vite-plugin-terminal")).default({
-          output: ["terminal", "console"],
-        }),
+      (await import("vite-plugin-terminal")).default({
+        output: ["terminal", "console"],
+      }),
     ],
   ],
+
   define: {
     global: "globalThis",
     "import.meta.env.APP_DESCRIPTION": JSON.stringify(pkgJson.description),
     "import.meta.env.APP_VERSION": JSON.stringify(pkgJson.version),
   },
-  resolve: {
-    alias: {
-      http: "rollup-plugin-node-polyfills/polyfills/http",
-      https: "rollup-plugin-node-polyfills/polyfills/http",
-      stream: "rollup-plugin-node-polyfills/polyfills/stream",
-      util: "rollup-plugin-node-polyfills/polyfills/util",
-      zlib: "rollup-plugin-node-polyfills/polyfills/zlib",
-      process: "rollup-plugin-node-polyfills/polyfills/process-es6",
-      buffer: "rollup-plugin-node-polyfills/polyfills/buffer-es6",
-    },
-  },
-}))
+}));

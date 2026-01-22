@@ -1,4 +1,3 @@
-import { BeaconEvent, defaultEventCallbacks } from "@airgap/beacon-sdk"
 import { BeaconWallet } from "@taquito/beacon-wallet"
 import { TezosToolkit } from "@taquito/taquito"
 import Config from "../../Config"
@@ -33,12 +32,7 @@ function SplittedWallet({
     }
 
     try {
-      await testnetContext.wallet.requestPermissions({
-        network: {
-          type: network.networkType,
-          rpcUrl: network.rpcUrl,
-        },
-      })
+      await testnetContext.wallet.requestPermissions()
       // gets user's address
       const userAddress = await testnetContext.wallet.getPKH()
       await setup(userAddress)
@@ -48,11 +42,14 @@ function SplittedWallet({
   }
 
   useEffect(() => {
-    ;(async () => {
+    ; (async () => {
       // creates a wallet instance
       const wallet = new BeaconWallet({
         name: Config.application.name,
-        preferredNetwork: network.networkType,
+        network: {
+          type: network.networkType!,
+          rpcUrl: network.rpcUrl,
+        },
         disableDefaultEvents: false,
       })
       testnetContext.Tezos.setWalletProvider(wallet)
